@@ -9,6 +9,8 @@ Vue.config.productionTip = false
 // Require the main Sass manifest file
 require('./assets/sass/main.scss');
 
+window.Event = new Vue();
+
 // npm install bulma bulma-extensions node-sass sass-loader --save
 
 /* eslint-disable no-new */

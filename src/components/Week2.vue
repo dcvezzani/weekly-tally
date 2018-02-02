@@ -112,6 +112,11 @@ export default {
 			});
 		});
 
+		api.fetchWeek(this.datesOfWeek[0], (res) => {
+			console.log(res);
+		});
+		
+
 		// {checkboxClassId: this.checkboxClassid, meta: this.meta}
 	  window.Event.$on("week:toggle-checkbox-selected", (options) => {
 			const topic = options.meta.topic;

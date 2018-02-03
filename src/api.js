@@ -10,7 +10,7 @@ var instance = axios.create({
 var api = {
 
 	fetchWeek: (date, callback) => {
-		console.log(date);
+		// console.log(date);
 		const startDate = moment(date).startOf('week').format('YYYY-MM-DD');
 		const stopDate = moment(date).endOf('week').format('YYYY-MM-DD');
 		// callback({recordedAtStart: startDate, recordedAtStop: stopDate});
@@ -22,12 +22,12 @@ var api = {
 				callback(response.data);
 			})
 			.catch(function (error) {
-				console.log(error);
+				console.error(error);
 			});
 	}, 
 
 	fetchTotal: (date, topic, callback) => {
-		console.log(date);
+		// console.log(date);
 		const startDate = moment(date).startOf('week').format('YYYY-MM-DD');
 		const stopDate = moment(date).endOf('week').format('YYYY-MM-DD');
 		// callback({recordedAtStart: startDate, recordedAtStop: stopDate});
@@ -39,12 +39,12 @@ var api = {
 				callback(response.data);
 			})
 			.catch(function (error) {
-				console.log(error);
+				console.error(error);
 			});
 	}, 
 
 	saveDetails: (data, callback) => {
-		console.log(data);
+		// console.log(data);
 		let date = data.source.split(/:/)[1];
 		let topic = data.source.split(/:/)[2].replace(/-/, '_');
 		let body = {}
@@ -54,12 +54,12 @@ var api = {
 				callback(response);
 			})
 			.catch(function (error) {
-				console.log(error);
+				console.error(error);
 			});
 	}, 
 
 	saveTopicAccomplished: (data, callback) => {
-		console.log(data);
+		// console.log(data);
 		let date = data.source.split(/:/)[1];
 		let topic = data.source.split(/:/)[2].replace(/-/, '_');
 		let body = {}
@@ -69,7 +69,7 @@ var api = {
 				callback(response);
 			})
 			.catch(function (error) {
-				console.log(error);
+				console.error(error);
 			});
 	}, 
 

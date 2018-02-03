@@ -67,6 +67,7 @@ export default {
 			// console.log(['topic:points:update', data, this.topicLabel, data.topic, data.total]);
 			if (this.topicLabel == data.topic) {
 				this.total = data.total;
+				window.Event.$emit("topic:points:updated");
 			}
 		});
 	},

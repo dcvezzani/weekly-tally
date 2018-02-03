@@ -5,6 +5,9 @@
 			<li v-for="day in daysOfWeek"><a :class="{'button': true, 'is-primary': isSelected(day)}" @click="selectDetails(day)">{{ day }}</a></li>
 		</ul>
 
+		<div @click="updateTotalPoints">Total Points for the Week: <br>{{ total }}</div>
+		<hr>
+
 		<topic label="Positive Food" :dates="datesOfWeek"></topic>
 		<topic label="Negative Food" :dates="datesOfWeek"></topic>
 		<topic label="Water" :dates="datesOfWeek"></topic>
@@ -88,11 +91,18 @@ export default {
 
 			return setChecked;
 		},
+		updateTotalPoints () {
+			api.fetchTotal(this.datesOfWeek[0], 'all', (res) => {
+				this.total = res.total;
+			});
+		},
 	},
   data () {
     return {
 			label: 'asdf', 
-			selectedDay: 'su'
+			selectedDay: 'su', 
+			total: 0,
+			topic_points_to_update: 0,
     }
   }, 
 	mounted () {
@@ -106,20 +116,32 @@ export default {
 
 		window.Event.$on("checkbox:notify", (data) => {
 			api.saveTopicAccomplished(data, (res) => {
-				console.log(res);
+				// console.log(res);
 				window.Event.$emit("points:update");
 			});
 		});
 		window.Event.$on("details:notify", (data) => {
 			api.saveDetails(data, (res) => {
-				console.log(res);
+				// console.log(res);
 			});
 		});
 		window.Event.$on("points:update", (options) => {
 			for (let topic of ['positive-food', 'negative-food', 'water', 'exercise', 'daily-greatness', 'scripture-study', 'personal-prayer']) {
+				// console.log(["points:update", this.datesOfWeek]);
+				this.topic_points_to_update = Object.keys(this.datesOfWeek).length;
 				api.fetchTotal(this.datesOfWeek[0], topic, (res) => {
-					console.log({topic: topic, total: res.total});
+					// console.log({topic: topic, total: res.total});
 					window.Event.$emit("topic:points:update", {topic: topic, total: res.total});
+				});
+			}
+		});
+
+		window.Event.$on("topic:points:updated", () => {
+			this.topic_points_to_update -= 1;
+			// console.log(['topic:points:updated', this.topic_points_to_update]);
+			if (this.topic_points_to_update == 0) {
+				api.fetchTotal(this.datesOfWeek[0], 'all', (res) => {
+					this.total = res.total;
 				});
 			}
 		});
@@ -130,7 +152,7 @@ export default {
 		});
 
 		api.fetchWeek(this.datesOfWeek[0], (res) => {
-			console.log(res.week);
+			// console.log(res.week);
 			for (let day of res.week) {
 				window.Event.$emit("data:update", day)
 			}

@@ -79,6 +79,7 @@ export default {
 	  window.Event.$on("checkbox:check", (options) => {
 			if (this.topic == options.topic) {
 				this.checked = options.checked;
+				this.notify();
 			}
 		});
 	  window.Event.$on("data:update", (data, options) => {

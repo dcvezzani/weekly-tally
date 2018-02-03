@@ -105,21 +105,37 @@ export default {
 		// }
 
 		window.Event.$on("checkbox:notify", (data) => {
-			console.log(data);
+			api.saveTopicAccomplished(data, (res) => {
+				console.log(res);
+				window.Event.$emit("points:update");
+			});
 		});
 		window.Event.$on("details:notify", (data) => {
 			api.saveDetails(data, (res) => {
 				console.log(res);
 			});
 		});
-
-		api.fetchWeek(this.datesOfWeek[0], (res) => {
-			console.log(res.weeks);
-			for (let day of res.weeks) {
-				window.Event.$emit("data:update", day)
+		window.Event.$on("points:update", (options) => {
+			for (let topic of ['positive-food', 'negative-food', 'water', 'exercise', 'daily-greatness', 'scripture-study', 'personal-prayer']) {
+				api.fetchTotal(this.datesOfWeek[0], topic, (res) => {
+					console.log({topic: topic, total: res.total});
+					window.Event.$emit("topic:points:update", {topic: topic, total: res.total});
+				});
 			}
 		});
-		
+
+		// {date: this.date, topic: this.topic}
+		window.Event.$on("data:updated", (data) => {
+			// console.log(["data:updated", data]);
+		});
+
+		api.fetchWeek(this.datesOfWeek[0], (res) => {
+			console.log(res.week);
+			for (let day of res.week) {
+				window.Event.$emit("data:update", day)
+			}
+			window.Event.$emit("points:update");
+		});
 
 		// {checkboxClassId: this.checkboxClassid, meta: this.meta}
 	  window.Event.$on("week:toggle-checkbox-selected", (options) => {

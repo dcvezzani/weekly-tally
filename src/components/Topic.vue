@@ -1,6 +1,8 @@
 <template>
   <div :class="['topic', nid]" :ref="nid">
 
+		<div>{{ total }}</div>
+
 		<ul>
 			<li v-for="day in daysOfWeek"><day-details :name="topicDetails(day)" :label="label"></day-details></li>
 		</ul>
@@ -56,8 +58,18 @@ export default {
 	},
   data () {
     return {
+			total: 0
     }
   }, 
+	mounted () {
+		// {topic: topic, total: res.total}
+		window.Event.$on("topic:points:update", (data) => {
+			// console.log(['topic:points:update', data, this.topicLabel, data.topic, data.total]);
+			if (this.topicLabel == data.topic) {
+				this.total = data.total;
+			}
+		});
+	},
 }
 </script>
 

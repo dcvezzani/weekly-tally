@@ -84,7 +84,7 @@ export default {
 			this.selected = (day == this.day);
 		});
 	  window.Event.$on("data:update", (data, options) => {
-			if (data.recorded_at == this.date) {
+			if (data.recorded_on == this.date) {
 				this.details = data[this.dbFieldFor('details')];
 				this.dayId = data.id;
 				//console.log(["data:update", data])

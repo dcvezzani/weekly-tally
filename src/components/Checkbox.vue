@@ -82,10 +82,11 @@ export default {
 			}
 		});
 	  window.Event.$on("data:update", (data, options) => {
-			if (data.recorded_at == this.date) {
+			if (data.recorded_on == this.date) {
 				this.points = data[this.dbFieldFor('points')];
 				this.checked = ((typeof this.points !== 'undefined') && this.points != null && this.points != 0);
 				this.dayId = data.id;
+				window.Event.$emit("data:updated", {date: this.date, topic: this.topic});
 			}
 		});
 	},

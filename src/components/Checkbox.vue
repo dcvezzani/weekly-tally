@@ -43,6 +43,9 @@ export default {
 		topic () {
 			return this.meta.topic;
 		},
+		dbTopic () {
+			return this.meta.topic.replace(/-/, '_');
+		},
 		subtopic () {
 			return this.meta.subtopic;
 		},
@@ -58,19 +61,31 @@ export default {
 		hello () {
 		  console.log("hello from: " + this.nid);
 		}, 
+		dbFieldFor (subtopic) {
+			return this.dbTopic + "_" + subtopic.replace(/-/, '_');
+		}, 
 		notify () {
 		  this.$nextTick(() => {window.Event.$emit("checkbox:notify", this.data);});
 		}
 	},
   data () {
     return {
-			checked: false
+			checked: false, 
+			points: 0,
+			dayId: null, 
     }
   }, 
 	mounted () {
 	  window.Event.$on("checkbox:check", (options) => {
 			if (this.topic == options.topic) {
 				this.checked = options.checked;
+			}
+		});
+	  window.Event.$on("data:update", (data, options) => {
+			if (data.recorded_at == this.date) {
+				this.points = data[this.dbFieldFor('points')];
+				this.checked = ((typeof this.points !== 'undefined') && this.points != null && this.points != 0);
+				this.dayId = data.id;
 			}
 		});
 	},

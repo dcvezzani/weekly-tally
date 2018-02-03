@@ -43,6 +43,9 @@ export default {
 		topic () {
 			return this.meta.topic;
 		},
+		dbTopic () {
+			return this.meta.topic.replace(/-/, '_');
+		},
 		subtopic () {
 			return this.meta.subtopic;
 		},
@@ -62,6 +65,9 @@ export default {
 		notify () {
 		  window.Event.$emit("details:notify", this.data);
 		}, 
+		dbFieldFor (subtopic) {
+			return this.dbTopic + "_" + subtopic.replace(/-/, '_');
+		}, 
 		toggleAllCheckboxes () {
 		  window.Event.$emit("week:toggle-checkbox-selected", {checkboxClassId: this.checkboxClassid, meta: this.meta});
 		},
@@ -70,12 +76,19 @@ export default {
     return {
 			selected: false, 
 			details: '', 
+			dayId: null, 
     }
   }, 
 	mounted () {
 		window.Event.$on("details:select", (day) => {
-			console.log("selecting " + day);
 			this.selected = (day == this.day);
+		});
+	  window.Event.$on("data:update", (data, options) => {
+			if (data.recorded_at == this.date) {
+				this.details = data[this.dbFieldFor('details')];
+				this.dayId = data.id;
+				//console.log(["data:update", data])
+			}
 		});
 	},
 }

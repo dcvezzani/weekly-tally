@@ -51,6 +51,7 @@ export default {
 	methods: {
 		selectDetails (day) {
 			this.selectedDay = day
+			console.log("selecting " + day);
 			window.Event.$emit("details:select", this.selectedDay);
 			return false;
 		},
@@ -113,7 +114,10 @@ export default {
 		});
 
 		api.fetchWeek(this.datesOfWeek[0], (res) => {
-			console.log(res);
+			console.log(res.weeks);
+			for (let day of res.weeks) {
+				window.Event.$emit("data:update", day)
+			}
 		});
 		
 

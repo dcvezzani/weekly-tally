@@ -17,7 +17,6 @@ var api = {
 		// return;
 
 		const params = {params: {recordedAtStart: startDate, recordedAtStop: stopDate}};
-		console.log(params);
 		instance.get('/weeks', params)
 			.then(function (response) {
 				callback(response.data);

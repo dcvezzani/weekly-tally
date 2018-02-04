@@ -2,11 +2,32 @@ import axios from 'axios'
 import moment from 'moment'
 
 var instance = axios.create({
-	baseURL: 'http://localhost:3000/api/',
+	baseURL: 'http://10.0.0.209:3000/api/',
   timeout: 1000,
   headers: {'X-Custom-Header': 'foobar'}
 });
 
+function adjustExercise (total) {
+	let res = {}
+
+	res['exercise-bonus'] = (total >= 120) ? 10 : 0;
+
+	let rest = 0;
+	while ((total+rest) < 140 && rest < 40) {
+		rest += 20
+	}
+	res['rest-days'] = rest;
+	
+	total += rest;
+	total += res['exercise-bonus'];
+	if (total >= 150) {
+		res['exercise-max-hit'] = true;
+		total = 150;
+	}
+
+	res['total'] = total;
+	return res;
+}
 var api = {
 
 	fetchWeek: (date, callback) => {
@@ -36,6 +57,20 @@ var api = {
 		const params = {params: {recordedAtStart: startDate, recordedAtStop: stopDate}};
 		instance.get('/week/' + topic + '/total', params)
 			.then(function (response) {
+				console.log([response.data, topic]);
+
+				let data = response.data;
+				switch (data.topic) {
+					case 'all':
+						let exercise = adjustExercise(data.exercise_total);
+						// console.log(["exercise", data.total, exercise.total]);
+						data.total += exercise.total;
+						//console.log(["exercise (2)", exercise, data]);
+						break;
+					case 'exercise':
+						data = Object.assign(data, adjustExercise(data.total));
+						break;
+				}
 				callback(response.data);
 			})
 			.catch(function (error) {

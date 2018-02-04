@@ -8,9 +8,36 @@
 		<div @click="updateTotalPoints">Total Points for the Week: <br>{{ total }}</div>
 		<hr>
 
+		<div class="section">
+		<div class="field">
+			<label class="label">Lowest Weight</label>
+			<div class="control">
+				<input ref="lowestWeight" class="input" type="text" placeholder="Lowest weight">
+			</div>
+			<p class="help">Saturday's scale session</p>
+		</div>
+		<div class="field">
+			<label class="label">Current Weight</label>
+			<div class="control">
+				<input ref="currentWeight" class="input" type="text" placeholder="Current weight">
+			</div>
+			<p class="help">Saturday's scale session</p>
+		</div>
+		<div class="field">
+			<p class="control">
+				<button @click="calculateWeight" class="button is-success">
+					Calculate
+				</button>
+			</p>
+		</div>
+		</div>
+		<hr>
+
 		<topic label="Positive Food" :dates="datesOfWeek"></topic>
+		<topic label="Fruits Vegetables" :dates="datesOfWeek"></topic>
 		<topic label="Negative Food" :dates="datesOfWeek"></topic>
 		<topic label="Water" :dates="datesOfWeek"></topic>
+		<topic label="After 8" :dates="datesOfWeek"></topic>
 		<topic label="Exercise" :dates="datesOfWeek"></topic>
 		<topic label="Daily Greatness" :dates="datesOfWeek"></topic>
 		<topic label="Scripture Study" :dates="datesOfWeek"></topic>
@@ -27,7 +54,7 @@ import Topic from '@/components/Topic'
 
 window.ReadOnly = {
 	daysOfWeek: () => { return ['su', 'm', 'tu', 'w', 'th', 'f', 'sa'] },
-	topics: () => { return ['positive-food', 'negative-food', 'water', 'exercise', 'daily-greatness', 'scripture-study', 'personal-prayer'] },
+	topics: () => { return ['positive-food', 'fruits-vegetables', 'negative-food', 'water', 'after-8', 'exercise', 'daily-greatness', 'scripture-study', 'personal-prayer'] },
 }
 
 export default {
@@ -96,6 +123,18 @@ export default {
 				this.total = res.total;
 			});
 		},
+		calculateWeight () {
+			let lowestWeight = parseFloat(this.$refs.lowestWeight.value)
+			let currentWeight = parseFloat(this.$refs.currentWeight.value)
+			let diffWeight = (lowestWeight - currentWeight)
+
+			if (diffWeight > 0) {
+				this.weight_points = (diffWeight / this.weight_factor) * 10;
+			} else {
+				this.weight_points = 0;
+			}
+			window.Event.$emit("points:update");
+		},
 	},
   data () {
     return {
@@ -103,20 +142,14 @@ export default {
 			selectedDay: 'su', 
 			total: 0,
 			topic_points_to_update: 0,
+			weight_points: 0,
+			weight_factor: 2.0, 
     }
   }, 
 	mounted () {
-		// let topics = ['positive-food-details', 'positive-food', 'negative-food-details', 'negative-food', 'water-details', 'water', 'exercise-details', 'exercise', 'daily-greatness-details', 'daily-greatness', 'scripture-study-details', 'scripture-study', 'personal-prayer-details', 'personal-prayer']
-
-		// for (let day of this.daysOfWeek) {
-		// 	for (let topic of topics) {
-		// 		//console.log(day + "-" + topic);
-		// 	}
-		// }
-
 		window.Event.$on("checkbox:notify", (data) => {
 			api.saveTopicAccomplished(data, (res) => {
-				// console.log(res);
+				console.log(res);
 				window.Event.$emit("points:update");
 			});
 		});
@@ -126,7 +159,7 @@ export default {
 			});
 		});
 		window.Event.$on("points:update", (options) => {
-			for (let topic of ['positive-food', 'negative-food', 'water', 'exercise', 'daily-greatness', 'scripture-study', 'personal-prayer']) {
+			for (let topic of ['positive-food', 'fruits-vegetables', 'negative-food', 'water', 'after-8', 'exercise', 'daily-greatness', 'scripture-study', 'personal-prayer']) {
 				// console.log(["points:update", this.datesOfWeek]);
 				this.topic_points_to_update = Object.keys(this.datesOfWeek).length;
 				api.fetchTotal(this.datesOfWeek[0], topic, (res) => {
@@ -141,7 +174,7 @@ export default {
 			// console.log(['topic:points:updated', this.topic_points_to_update]);
 			if (this.topic_points_to_update == 0) {
 				api.fetchTotal(this.datesOfWeek[0], 'all', (res) => {
-					this.total = res.total;
+					this.total = res.total + this.weight_points;
 				});
 			}
 		});

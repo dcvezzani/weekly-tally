@@ -38,7 +38,7 @@ var api = {
 		// return;
 
 		const params = {params: {recordedAtStart: startDate, recordedAtStop: stopDate}};
-		instance.get('/week', params)
+		instance.get('/user/1/week', params)
 			.then(function (response) {
 				callback(response.data);
 			})
@@ -55,7 +55,7 @@ var api = {
 		// return;
 
 		const params = {params: {recordedAtStart: startDate, recordedAtStop: stopDate}};
-		instance.get('/week/' + topic + '/total', params)
+		instance.get('/user/1/week/' + topic + '/total', params)
 			.then(function (response) {
 				console.log([response.data, topic]);
 
@@ -84,7 +84,7 @@ var api = {
 		let topic = data.source.split(/:/)[2].replace(/-/, '_');
 		let body = {}
 		body[topic + "_details"] = data.details;
-		instance.put('/week/day/' + date, body)
+		instance.put('/user/1/week/day/' + date, body)
 			.then(function (response) {
 				callback(response);
 			})
@@ -99,7 +99,7 @@ var api = {
 		let topic = data.source.split(/:/)[2].replace(/-/, '_');
 		let body = {}
 		body[topic + "_checked"] = data.checked;
-		instance.put('/week/day/' + date, body)
+		instance.put('/user/1/week/day/' + date, body)
 			.then(function (response) {
 				callback(response);
 			})

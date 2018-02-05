@@ -144,6 +144,7 @@ export default {
 			topic_points_to_update: 0,
 			weight_points: 0,
 			weight_factor: 2.0, 
+			weight_least: 0, 
     }
   }, 
 	mounted () {

@@ -2,7 +2,7 @@ import axios from 'axios'
 import moment from 'moment'
 
 var instance = axios.create({
-	baseURL: 'http://10.0.0.209:3000/api/',
+	baseURL: 'http://10.0.0.236:3000/api/',
   timeout: 1000,
   headers: {'X-Custom-Header': 'foobar'}
 });

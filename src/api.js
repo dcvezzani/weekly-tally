@@ -32,6 +32,34 @@ function adjustExercise (total) {
 }
 var api = {
 
+	fetchUser: (token, callback) => {
+    var user = jwt.decode(token);
+    // console.log(['chk2', user, token]);
+
+		instance.get('/user/' + user.id)
+			.then(function (response) {
+				callback(response.data);
+			})
+			.catch(function (error) {
+				console.error(error);
+			});
+	}, 
+
+	updateUser: (token, data, callback) => {
+    var user = jwt.decode(token);
+    // console.log(['chk2', user, token]);
+		// let body = {}
+		// body[topic + "_details"] = data.details;
+
+		instance.put('/user/' + user.id, data)
+			.then(function (response) {
+				callback(response.data);
+			})
+			.catch(function (error) {
+				console.error(error);
+			});
+	}, 
+
 	fetchWeek: (token, date, callback) => {
 		// console.log(date);
 		const startDate = moment(date).startOf('week').format('YYYY-MM-DD');

@@ -36,9 +36,16 @@
 
       <div class="section">
       <div class="field">
+        <label class="label">Weight Factor</label>
+        <div class="control">
+          <input @blur="updateUser" v-model="weight_factor" ref="weightFactor" class="input" type="text" placeholder="Weight factor">
+        </div>
+        <p class="help">Weight factor calculated at the beginning of challenge</p>
+      </div>
+      <div class="field">
         <label class="label">Lowest Weight</label>
         <div class="control">
-          <input ref="lowestWeight" class="input" type="text" placeholder="Lowest weight">
+          <input @blur="updateUser" v-model="weight_least" ref="lowestWeight" class="input" type="text" placeholder="Lowest weight">
         </div>
         <p class="help">Saturday's scale session</p>
       </div>
@@ -96,6 +103,9 @@ export default {
 		}, 
 	},
 	methods: {
+    updateUser () {
+      window.Event.$emit("user:update", {weight_factor: this.weight_factor, weight_least: this.weight_least});
+    },
     email () {
       return (this.token) ? jwt.decode(this.token).email : null;
     },
@@ -169,12 +179,18 @@ export default {
 			total: 0,
 			topic_points_to_update: 0,
 			weight_points: 0,
-			weight_factor: 2.0, 
+			weight_factor: 0, 
 			weight_least: 0, 
       token: null,
+      user: {},
     }
   }, 
 	mounted () {
+		window.Event.$on("user:update", (data) => {
+			api.updateUser(this.token, data, (res) => {
+				console.log(res);
+			});
+		});
 		window.Event.$on("checkbox:notify", (data) => {
 			api.saveTopicAccomplished(this.token, data, (res) => {
 				console.log(res);
@@ -230,6 +246,12 @@ export default {
       this.token = token;
 
       if (this.token) {
+        api.fetchUser(this.token, (res) => {
+          this.user = res.user;
+          this.weight_factor = this.user.weight_factor;
+          this.weight_least = this.user.weight_least;
+        });
+      
         api.fetchWeek(this.token, this.datesOfWeek[0], (res) => {
           // console.log(res.week);
           for (let day of res.week) {

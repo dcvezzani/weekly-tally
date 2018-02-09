@@ -5,7 +5,7 @@
   "author": "David Vezzani <david.vezzani@greenseedtech.com>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --host 0.0.0.0 --port 8080 --inline --progress --config build/webpack.dev.conf.js --open",
+    "dev": "webpack-dev-server --public reliacode.com:8080 --host 0.0.0.0 --port 8080 --inline --progress --config build/webpack.dev.conf.js --open",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest.conf.js --coverage",
     "e2e": "node test/e2e/runner.js",
@@ -16,7 +16,9 @@
     "axios": "^0.17.1",
     "bulma": "^0.6.2",
     "bulma-extensions": "^0.7.4",
+    "gapi-client": "0.0.3",
     "jquery": "^3.3.1",
+    "jsonwebtoken": "^8.1.1",
     "moment": "^2.20.1",
     "node-sass": "^4.7.2",
     "sass-loader": "^6.0.6",

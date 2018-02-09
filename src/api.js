@@ -1,8 +1,9 @@
 import axios from 'axios'
 import moment from 'moment'
+import jwt from 'jsonwebtoken'
 
 var instance = axios.create({
-	baseURL: 'http://10.0.0.209:3000/api/',
+	baseURL: 'http://10.0.0.236:3000/api/',
   timeout: 1000,
   headers: {'X-Custom-Header': 'foobar'}
 });
@@ -30,15 +31,17 @@ function adjustExercise (total) {
 }
 var api = {
 
-	fetchWeek: (date, callback) => {
+	fetchWeek: (token, date, callback) => {
 		// console.log(date);
 		const startDate = moment(date).startOf('week').format('YYYY-MM-DD');
 		const stopDate = moment(date).endOf('week').format('YYYY-MM-DD');
 		// callback({recordedAtStart: startDate, recordedAtStop: stopDate});
 		// return;
 
+    var user = jwt.decode(token);
+    // console.log(['chk', user, token]);
 		const params = {params: {recordedAtStart: startDate, recordedAtStop: stopDate}};
-		instance.get('/user/1/week', params)
+		instance.get('/user/' + user.id + '/week', params)
 			.then(function (response) {
 				callback(response.data);
 			})
@@ -47,15 +50,16 @@ var api = {
 			});
 	}, 
 
-	fetchTotal: (date, topic, callback) => {
+	fetchTotal: (token, date, topic, callback) => {
 		// console.log(date);
 		const startDate = moment(date).startOf('week').format('YYYY-MM-DD');
 		const stopDate = moment(date).endOf('week').format('YYYY-MM-DD');
 		// callback({recordedAtStart: startDate, recordedAtStop: stopDate});
 		// return;
 
+    var user = jwt.decode(token);
 		const params = {params: {recordedAtStart: startDate, recordedAtStop: stopDate}};
-		instance.get('/user/1/week/' + topic + '/total', params)
+		instance.get('/user/' + user.id + '/week/' + topic + '/total', params)
 			.then(function (response) {
 				console.log([response.data, topic]);
 
@@ -78,13 +82,15 @@ var api = {
 			});
 	}, 
 
-	saveDetails: (data, callback) => {
+	saveDetails: (token, data, callback) => {
 		// console.log(data);
 		let date = data.source.split(/:/)[1];
 		let topic = data.source.split(/:/)[2].replace(/-/, '_');
+
+    var user = jwt.decode(token);
 		let body = {}
 		body[topic + "_details"] = data.details;
-		instance.put('/user/1/week/day/' + date, body)
+		instance.put('/user/' + user.id + '/week/day/' + date, body)
 			.then(function (response) {
 				callback(response);
 			})
@@ -93,13 +99,15 @@ var api = {
 			});
 	}, 
 
-	saveTopicAccomplished: (data, callback) => {
+	saveTopicAccomplished: (token, data, callback) => {
 		// console.log(data);
 		let date = data.source.split(/:/)[1];
 		let topic = data.source.split(/:/)[2].replace(/-/, '_');
+
+    var user = jwt.decode(token);
 		let body = {}
 		body[topic + "_checked"] = data.checked;
-		instance.put('/user/1/week/day/' + date, body)
+		instance.put('/user/' + user.id + '/week/day/' + date, body)
 			.then(function (response) {
 				callback(response);
 			})

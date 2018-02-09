@@ -82,6 +82,10 @@ export default {
 				this.notify();
 			}
 		});
+	  window.Event.$on("data:clear", (data, options) => {
+      this.checked = false;
+      this.points = 0;
+		});
 	  window.Event.$on("data:update", (data, options) => {
 			if (data.recorded_on == this.date) {
 				this.points = data[this.dbFieldFor('points')];

@@ -26,7 +26,8 @@ import axios from 'axios';
 import jwt from 'jsonwebtoken';
 
 var instance = axios.create({
-  baseURL: 'http://10.0.0.236:3000/',
+  // baseURL: 'http://10.0.0.236:3000/',
+	baseURL: 'https://reliacode.com/api/',
   timeout: 1000,
   headers: {'X-Custom-Header': 'foobar'}
 });

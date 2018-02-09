@@ -2,7 +2,7 @@
   <div :class="['day-details', nid]" :ref="nid" v-if="selected">
 
 		<div class="field">
-			<label class="label" @click="toggleAllCheckboxes">{{ label }} ({{ name }})</label>
+			<label class="label" @click="toggleAllCheckboxes">{{ label }} ({{ dayOfWeek }})</label>
 			<div class="control">
 				<textarea @blur="notify" v-model="details" class="textarea" placeholder="Textarea"></textarea>
 			</div>
@@ -13,6 +13,7 @@
 
 <script>
 import $ from 'jquery';
+import moment from 'moment';
 
 export default {
   name: 'Details',
@@ -36,6 +37,9 @@ export default {
 		}, 
 		day () {
 			return this.meta.day;
+		},
+		dayOfWeek () {
+			return moment(this.meta.date).format("dddd");
 		},
 		date () {
 			return this.meta.date;
@@ -82,6 +86,9 @@ export default {
 	mounted () {
 		window.Event.$on("details:select", (day) => {
 			this.selected = (day == this.day);
+		});
+	  window.Event.$on("data:clear", (data, options) => {
+      this.details = '';
 		});
 	  window.Event.$on("data:update", (data, options) => {
 			if (data.recorded_on == this.date) {

@@ -70,6 +70,9 @@ export default {
 				window.Event.$emit("topic:points:updated");
 			}
 		});
+	  window.Event.$on("data:clear", (data, options) => {
+      this.total = 0;
+		});
 	},
 }
 </script>

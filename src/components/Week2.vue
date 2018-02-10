@@ -80,7 +80,7 @@ import Topic from '@/components/Topic'
 import jwt from 'jsonwebtoken';
 
 window.ReadOnly = {
-	daysOfWeek: () => { return ['su', 'm', 'tu', 'w', 'th', 'f', 'sa'] },
+	daysOfWeek: () => { return ['sa', 'su', 'm', 'tu', 'w', 'th', 'f'] },
 	topics: () => { return ['positive-food', 'fruits-vegetables', 'negative-food', 'water', 'after-8', 'exercise', 'daily-greatness', 'scripture-study', 'personal-prayer'] },
 }
 
@@ -94,7 +94,7 @@ export default {
 		topics () { return window.ReadOnly.topics(); }, 
 		datesOfWeek () { 
 			let dates = {};
-			let start = moment().startOf('week');
+			let start = moment().startOf('week').subtract(1, 'days');
 			let cnt = 0;
 			for (let cnt=0; cnt < 7; cnt += 1) {
 				let dateLabel = this.daysOfWeek[cnt];
@@ -191,7 +191,7 @@ export default {
   data () {
     return {
 			label: 'asdf', 
-			selectedDay: 'su', 
+			selectedDay: 'sa', 
 			selectedWeek: false, 
 			total: 0,
 			topic_points_to_update: 0,

@@ -61,8 +61,8 @@ var api = {
 
 	fetchWeek: (token, date, callback) => {
 		// console.log(date);
-		const startDate = moment(date).startOf('week').format('YYYY-MM-DD');
-		const stopDate = moment(date).endOf('week').format('YYYY-MM-DD');
+		const startDate = moment(date).startOf('week').subtract(1, 'days').format('YYYY-MM-DD');
+		const stopDate = moment(date).endOf('week').subtract(1, 'days').format('YYYY-MM-DD');
 		// callback({recordedAtStart: startDate, recordedAtStop: stopDate});
 		// return;
 
@@ -80,8 +80,8 @@ var api = {
 
 	fetchTotal: (token, date, topic, callback) => {
 		// console.log(date);
-		const startDate = moment(date).startOf('week').format('YYYY-MM-DD');
-		const stopDate = moment(date).endOf('week').format('YYYY-MM-DD');
+		const startDate = moment(date).startOf('week').subtract(1, 'days').format('YYYY-MM-DD');
+		const stopDate = moment(date).endOf('week').subtract(1, 'days').format('YYYY-MM-DD');
 		// callback({recordedAtStart: startDate, recordedAtStop: stopDate});
 		// return;
 

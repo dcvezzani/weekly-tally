@@ -12,7 +12,7 @@
 		</ul>
 
 		<ul class="points">
-			<li v-for="day in daysOfWeek"><checkbox :name="topicPoints(day)"></checkbox></li>
+			<li v-for="day in daysOfWeek"><checkbox :name="topicPoints(day)" :tallyCnt="tallyCount(topicLabel)"></checkbox></li>
 		</ul>
 
   </div>
@@ -50,6 +50,25 @@ export default {
 		},
 	},
 	methods: {
+    tallyCount (topic) {
+      switch (topic) {
+        case 'positive-food':
+        case 'negative-food':
+          return 10;
+          break;
+
+        case 'water':
+          return 8;
+          break;
+
+        case 'exercise':
+          return 3;
+          break;
+
+        default:
+          return 0;
+      }
+    }, 
 		toggleAllCheckboxes () {
       if (this.weekView) {
         window.Event.$emit("week2:toggle-checkbox-selected", {topic: this.topicLabel});

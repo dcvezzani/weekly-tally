@@ -41,8 +41,7 @@ export default {
     }
   },
   methods: {
-    onSignIn (googleUser) {
-      const self = this;
+    processUser (googleUser) {
       // Useful data for your client-side scripts:
       var profile = googleUser.getBasicProfile();
       // console.log("ID: " + profile.getId()); // Don't send this directly to your server!
@@ -54,6 +53,14 @@ export default {
 
       // The ID token you need to pass to your backend:
       var id_token = googleUser.getAuthResponse().id_token;
+      return id_token;
+    },
+    onSignIn (googleUser) {
+      const self = this;
+      var id_token = this.processUser(googleUser);
+      // var id_token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6ImUyNzY3MWQ3M2EyNjA1Y2NkNDU0NDEzYzRjOTRlMjViM2Y2NmNkZWEifQ.eyJhenAiOiIzODk3Nzc5MzUyMC11NTFiNWtwdmtmdW9rcDJldjl2YjN2bGxma2w2b2Fxby5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsImF1ZCI6IjM4OTc3NzkzNTIwLXU1MWI1a3B2a2Z1b2twMmV2OXZiM3ZsbGZrbDZvYXFvLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTAyMzExMDcxODkwNzE4NTkxNDQ2IiwiZW1haWwiOiJkY3ZlenphbmlAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJ2ZlltYS1iOUNtdHE0aGZRZ0FHbDZRIiwiZXhwIjoxNTE4MzAzNDI1LCJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwianRpIjoiOWFkMjdmODA1MGE3ZWEzMDRiZjZkZGZjZGMyMzRjYTEwYWEyM2E1YSIsImlhdCI6MTUxODI5OTgyNSwibmFtZSI6IkRhdmlkIFZlenphbmkiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDQuZ29vZ2xldXNlcmNvbnRlbnQuY29tLy0tdXhDTW9vZlcyOC9BQUFBQUFBQUFBSS9BQUFBQUFBQUFBQS9BQ1NJTGpYNnUwUnM1c3UydTZ3VGdSYlhCNXlUUGlXM2xBL3M5Ni1jL3Bob3RvLmpwZyIsImdpdmVuX25hbWUiOiJEYXZpZCIsImZhbWlseV9uYW1lIjoiVmV6emFuaSIsImxvY2FsZSI6ImVuIn0.X_0p9NPWZ-1ucCqUqPUrpZ-6NoJ5wOJiX1tIxACztJqIjmSa3u27PulL_bypKRyX4cXqR1EBdhyq7XSzkoIdw6jU0JODFWOjJ6iYCyFWSN9AWJDHg3TP1I1XTPUq6SMT9Cma9yj7zYzwUL8WdakL5IfU3HrbnFhz7ccZ4coik8lyo5oSJ2Mno07HgiVyy_uGhCt-4hFKkZzFOfIhs7-P-8NoMXLCoYgpQRL85cqDDmqTBG-IjgI6gv3SEM1iD0DlVtUT2Dkz9WEqMN5fCrtkavIdQfj2fbLmGMXDmkejJeCV_1pu1bzteZx3Y8fho5YJz3X2JebII16fbW9GdjgEeQ'
+      // var id_token = this.token;
+
       // console.log("ID Token: " + id_token);
 
       instance.post('/tokensignin', {
@@ -106,6 +113,8 @@ export default {
     //   console.log("app:fetchJwt");
     //   window.Event.$emit("week2:fetchedJwt", self.token)
     // });
+
+    // this.onSignIn('xxx');
   },
 }
 </script>

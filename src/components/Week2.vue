@@ -165,7 +165,7 @@ export default {
 			let diffWeight = (lowestWeight - currentWeight)
 
 			if (diffWeight > 0) {
-				this.weight_points = (diffWeight / this.weight_factor) * 10;
+				this.weight_points = Math.round((diffWeight / this.weight_factor) * 10);
 			} else {
 				this.weight_points = 0;
 			}

@@ -1,8 +1,12 @@
 <template>
   <div :class="['topic', nid]" :ref="nid">
 
-		<div>{{ total }}</div>
-
+    <div v-if="weekView">
+      <div>{{ total }}</div>
+      <div class="field">
+        <label class="label" @click="toggleAllCheckboxes">{{ label }}<span v-if="!weekView"> ({{ dayOfWeek }})</span></label>
+      </div>
+    </div>
 		<ul>
 			<li v-for="day in daysOfWeek"><day-details :name="topicDetails(day)" :label="label"></day-details></li>
 		</ul>
@@ -46,6 +50,11 @@ export default {
 		},
 	},
 	methods: {
+		toggleAllCheckboxes () {
+      if (this.weekView) {
+        window.Event.$emit("week2:toggle-checkbox-selected", {topic: this.topicLabel});
+      }
+		},
 		topicPrefix (day) {
 			return day + ":" + this.dates[day] + ":";
 		}, 
@@ -58,10 +67,14 @@ export default {
 	},
   data () {
     return {
-			total: 0
+			total: 0, 
+      weekView: false, 
     }
   }, 
 	mounted () {
+		window.Event.$on("week-view:enable", (mode) => {
+			this.weekView = (mode == true);
+		});
 		// {topic: topic, total: res.total}
 		window.Event.$on("topic:points:update", (data) => {
 			// console.log(['topic:points:update', data, this.topicLabel, data.topic, data.total]);

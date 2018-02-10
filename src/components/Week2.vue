@@ -11,6 +11,9 @@
       <ul id="days-of-the-week">
         <li v-for="day in daysOfWeek"><a :class="{'button': true, 'is-primary': isSelected(day)}" @click="selectDetails(day)">{{ day }}</a></li>
       </ul>
+      <ul id="week-view">
+        <li><a :class="{'button': true, 'is-primary': isWeekViewSelected()}" @click="selectWeek()">Week</a></li>
+      </ul>
       
       <hr>
 
@@ -47,7 +50,7 @@
         <div class="control">
           <input @blur="updateUser" v-model="weight_least" ref="lowestWeight" class="input" type="text" placeholder="Lowest weight">
         </div>
-        <p class="help">Saturday's scale session</p>
+        <p class="help">What has been your lowest measurement?</p>
       </div>
       <div class="field">
         <label class="label">Current Weight</label>
@@ -116,13 +119,26 @@ export default {
 			window.Event.$emit("app:signOut");
     },
 		selectDetails (day) {
+			this.selectedWeek = false;
 			this.selectedDay = day
 			console.log("selecting " + day);
+			window.Event.$emit("week-view:enable", this.selectedWeek);
 			window.Event.$emit("details:select", this.selectedDay);
 			return false;
 		},
 		isSelected (day) {
 			return (this.selectedDay == day);
+		},
+		selectWeek () {
+			this.selectedWeek = true;
+			this.selectedDay = 'none';
+			console.log("selecting week");
+			window.Event.$emit("week-view:enable", this.selectedWeek);
+			window.Event.$emit("details:select", this.selectedDay);
+			return false;
+		},
+		isWeekViewSelected () {
+			return this.selectedWeek;
 		},
 		allCheckboxesCheckedFor (topic) {
 			let isChecked = true;
@@ -176,8 +192,11 @@ export default {
     return {
 			label: 'asdf', 
 			selectedDay: 'su', 
+			selectedWeek: false, 
 			total: 0,
 			topic_points_to_update: 0,
+			topic_complete_to_fetch: {cnt: -1, tally: 0, total: 0},
+			topic_complete_to_fetch_tally: 0,
 			weight_points: 0,
 			weight_factor: 0, 
 			weight_least: 0, 
@@ -234,6 +253,22 @@ export default {
 			const toggleCheckOptions = Object.assign({}, options, {topic: topic});
 			
 			window.Event.$emit("checkbox:check", {topic: topic, checked: this.toggleCheckboxes(toggleCheckOptions)});
+		});
+
+	  window.Event.$on("week2:toggle-checkbox-selected", (options) => {
+      this.topic_complete_to_fetch.cnt = Object.keys(this.datesOfWeek).length;
+      this.topic_complete_to_fetch.total = this.topic_complete_to_fetch.cnt;
+      this.topic_complete_to_fetch.tally = 0;
+			window.Event.$emit("checkbox:fetch-topic-complete", {topic: options.topic, emit: 'week2:topic-complete-fetched'});
+		});
+
+	  window.Event.$on("week2:topic-complete-fetched", (options) => {
+			this.topic_complete_to_fetch.cnt -= 1;
+      this.topic_complete_to_fetch.tally += (options.checked) ? 1 : 0
+			if (this.topic_complete_to_fetch.cnt == 0) {
+        window.Event.$emit("checkbox:check", {topic: options.topic, checked: !(this.topic_complete_to_fetch.tally == this.topic_complete_to_fetch.total)});
+        this.topic_complete_to_fetch.cnt = 0;
+			}
 		});
 
 	  window.Event.$on("data:clear", (data, options) => {

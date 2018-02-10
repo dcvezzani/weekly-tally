@@ -1,9 +1,10 @@
 <template>
-  <div :class="['checkbox', classid]">
+  <div :class="['checkbox', classid]" v-if="selected || weekView">
 
 		<div class="field">
 			<div class="control">
 				<label class="checkbox">
+          <div v-if="weekView">{{ day }}</div>
 					<input @click="notify" v-model="checked" type="checkbox">
 				</label>
 			</div>
@@ -70,12 +71,28 @@ export default {
 	},
   data () {
     return {
+			selected: false, 
 			checked: false, 
 			points: 0,
 			dayId: null, 
+      weekView: false, 
     }
   }, 
 	mounted () {
+		window.Event.$on("checkbox:fetch-topic-complete", (options) => {
+			if (this.topic == options.topic) {
+        window.Event.$emit(options.emit, {topic: this.topic, checked: this.checked});
+      }
+		});
+
+		window.Event.$on("week-view:enable", (mode) => {
+			this.weekView = (mode == true);
+		});
+
+		window.Event.$on("details:select", (day) => {
+			this.selected = (day == this.day);
+		});
+    
 	  window.Event.$on("checkbox:check", (options) => {
 			if (this.topic == options.topic) {
 				this.checked = options.checked;

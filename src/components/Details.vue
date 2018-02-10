@@ -73,7 +73,9 @@ export default {
 			return this.dbTopic + "_" + subtopic.replace(/-/, '_');
 		}, 
 		toggleAllCheckboxes () {
-		  window.Event.$emit("week:toggle-checkbox-selected", {checkboxClassId: this.checkboxClassid, meta: this.meta});
+      if (this.weekView) {
+        window.Event.$emit("week:toggle-checkbox-selected", {checkboxClassId: this.checkboxClassid, meta: this.meta});
+      }
 		},
 	},
   data () {
@@ -81,9 +83,14 @@ export default {
 			selected: false, 
 			details: '', 
 			dayId: null, 
+      weekView: false, 
     }
   }, 
 	mounted () {
+		window.Event.$on("week-view:enable", (mode) => {
+			this.weekView = (mode == true);
+		});
+    
 		window.Event.$on("details:select", (day) => {
 			this.selected = (day == this.day);
 		});

@@ -1,6 +1,9 @@
 <template>
   <div class="container week">
 
+    <div id="token" v-show="given_name()">Hello, {{ given_name() }}</div>
+
+    <a class="action" href="#" @click="signOut" v-if="token">(Sign out)</a>
 
       <hr>
 

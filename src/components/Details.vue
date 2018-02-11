@@ -99,7 +99,7 @@ export default {
 	  window.Event.$on("data:clear", (data, options) => {
       this.details = '';
 		});
-	  window.Event.$on("dayMeta:set", (daySlot, data) => {
+	  window.Event.$on("dayMeta:set", (daySlot, topic, data) => {
       if (daySlot == this.daySlot && topic == this.topic) {
         this.dayMeta = data + ":details";
       }

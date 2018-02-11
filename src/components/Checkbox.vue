@@ -40,7 +40,7 @@ export default {
 		meta () {
 			let metadata = {}
 			let keys = ['day', 'date', 'topic', 'subtopic'];
-      console.log(['this.name', this.name]);
+      // console.log(['this.name', this.name]);
 			let parts = ((this.dayMeta) ? this.dayMeta : this.name).split(/:/);
 			for (let idx in keys) {
 				metadata[keys[idx]] = parts[idx];
@@ -139,7 +139,7 @@ export default {
       this.points = 0;
 		});
 	  window.Event.$on("data:update", (data, options) => {
-      console.log(['data:update', data.recorded_on, this.date, data]);
+      // console.log(['data:update', data.recorded_on, this.date, data]);
 			if (data.recorded_on == this.date) {
 				this.points = data[this.dbFieldFor('points')];
 				this.checked = ((typeof this.points !== 'undefined') && this.points != null && this.points != 0);

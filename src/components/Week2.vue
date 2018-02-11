@@ -1,9 +1,6 @@
 <template>
   <div class="container week">
 
-    <div id="token" v-show="given_name()">Hello, {{ given_name() }}</div>
-
-    <a class="action" href="#" @click="signOut" v-if="token">(Sign out)</a>
 
       <hr>
 
@@ -101,7 +98,7 @@ export default {
 
       let mdate = moment(this.targetDay);
       const today = mdate.format('dd');
-      let start = (today == 'Sa') ? mdate : mdate.startOf('week').subtract(1, 'days').format('YYYY-MM-DD');
+      let start = (today == 'Sa') ? mdate : mdate.startOf('week').subtract(1, 'days');
         
 			for (let cnt=0; cnt < 7; cnt += 1) {
 				let dateLabel = this.daysOfWeek[cnt];
@@ -321,7 +318,7 @@ export default {
           for (let topic of this.topics) {
             // m:2018-02-05:daily-greatness
             let data = day + ":" + date + ":" + topic;
-            console.log(data);
+            // console.log(data);
             window.Event.$emit("dayMeta:set", day, topic, data);
           }
         }
@@ -336,7 +333,7 @@ export default {
         api.fetchWeek(this.token, this.datesOfWeek.sa, (res) => {
           // console.log(res.week);
           for (let day of res.week) {
-            console.log(["data:update", day]);
+            // console.log(["data:update", day]);
             window.Event.$emit("data:update", day)
           }
           window.Event.$emit("points:update");

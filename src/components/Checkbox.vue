@@ -24,6 +24,7 @@ export default {
   name: 'Checkbox',
   props: {
 		name: {type: String, required: true}, 
+		daySlot: {type: String, required: true}, 
 		tallyCnt: {type: Number}, 
 	},
 	components: {
@@ -39,7 +40,8 @@ export default {
 		meta () {
 			let metadata = {}
 			let keys = ['day', 'date', 'topic', 'subtopic'];
-			let parts = this.name.split(/:/);
+      console.log(['this.name', this.name]);
+			let parts = ((this.dayMeta) ? this.dayMeta : this.name).split(/:/);
 			for (let idx in keys) {
 				metadata[keys[idx]] = parts[idx];
 			}
@@ -81,6 +83,7 @@ export default {
 	},
   data () {
     return {
+			dayMeta: null, 
 			selected: false, 
 			checked: false, 
 			points: 0,
@@ -102,6 +105,15 @@ export default {
     }
   }, 
 	mounted () {
+	  window.Event.$on("dayMeta:set", (daySlot, topic, data) => {
+      if (daySlot == this.daySlot && topic == this.topic) {
+        this.dayMeta = data;
+      }
+		});
+	  window.Event.$on("dayMeta:clear", () => {
+      this.dayMeta = null;
+		});
+
 		window.Event.$on("checkbox:fetch-topic-complete", (options) => {
 			if (this.topic == options.topic) {
         window.Event.$emit(options.emit, {topic: this.topic, checked: this.checked});
@@ -127,6 +139,7 @@ export default {
       this.points = 0;
 		});
 	  window.Event.$on("data:update", (data, options) => {
+      console.log(['data:update', data.recorded_on, this.date, data]);
 			if (data.recorded_on == this.date) {
 				this.points = data[this.dbFieldFor('points')];
 				this.checked = ((typeof this.points !== 'undefined') && this.points != null && this.points != 0);

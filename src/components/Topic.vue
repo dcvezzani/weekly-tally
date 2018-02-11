@@ -8,11 +8,11 @@
       </div>
     </div>
 		<ul>
-			<li v-for="day in daysOfWeek"><day-details :name="topicDetails(day)" :label="label"></day-details></li>
+			<li v-for="day in daysOfWeek"><day-details :name="topicDetails(day)" :label="label" :daySlot="day"></day-details></li>
 		</ul>
 
 		<ul class="points">
-			<li v-for="day in daysOfWeek"><checkbox :name="topicPoints(day)" :tallyCnt="tallyCount(topicLabel)"></checkbox></li>
+			<li v-for="day in daysOfWeek"><checkbox :name="topicPoints(day)" :tallyCnt="tallyCount(topicLabel)" :daySlot="day"></checkbox></li>
 		</ul>
 
   </div>

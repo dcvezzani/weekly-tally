@@ -19,6 +19,7 @@ export default {
   name: 'Details',
   props: {
 		name: {type: String, required: true}, 
+		daySlot: {type: String, required: true}, 
 		label: {type: String, required: true}
 	},
 	computed: {
@@ -29,7 +30,7 @@ export default {
 		meta () {
 			let metadata = {}
 			let keys = ['day', 'date', 'topic', 'subtopic'];
-			let parts = this.name.split(/:/);
+			let parts = ((this.dayMeta) ? this.dayMeta : this.name).split(/:/);
 			for (let idx in keys) {
 				metadata[keys[idx]] = parts[idx];
 			}
@@ -80,6 +81,7 @@ export default {
 	},
   data () {
     return {
+			dayMeta: null, 
 			selected: false, 
 			details: '', 
 			dayId: null, 
@@ -96,6 +98,14 @@ export default {
 		});
 	  window.Event.$on("data:clear", (data, options) => {
       this.details = '';
+		});
+	  window.Event.$on("dayMeta:set", (daySlot, data) => {
+      if (daySlot == this.daySlot && topic == this.topic) {
+        this.dayMeta = data + ":details";
+      }
+		});
+	  window.Event.$on("dayMeta:clear", () => {
+      this.dayMeta = null;
 		});
 	  window.Event.$on("data:update", (data, options) => {
 			if (data.recorded_on == this.date) {

@@ -60,11 +60,15 @@ var api = {
 	}, 
 
 	fetchWeek: (token, date, callback) => {
-		// console.log(date);
-		const startDate = moment(date).startOf('week').subtract(1, 'days').format('YYYY-MM-DD');
-		const stopDate = moment(date).endOf('week').subtract(1, 'days').format('YYYY-MM-DD');
-		// callback({recordedAtStart: startDate, recordedAtStop: stopDate});
-		// return;
+		// console.log(['current day label', date, moment(date).format('dd')]);
+    // return;
+
+    const today = moment(date).format('dd');
+		let startDate = (today == 'Sa') ? moment(date) : moment(date).startOf('week').subtract(1, 'days').format('YYYY-MM-DD');
+		const stopDate = moment(startDate).add(7, 'days').format('YYYY-MM-DD');
+    startDate = startDate.format('YYYY-MM-DD')
+    // console.log(['dates', today, startDate, stopDate])
+    // return;
 
     var user = jwt.decode(token);
     // console.log(['chk', user, token]);
@@ -79,17 +83,21 @@ var api = {
 	}, 
 
 	fetchTotal: (token, date, topic, callback) => {
-		// console.log(date);
-		const startDate = moment(date).startOf('week').subtract(1, 'days').format('YYYY-MM-DD');
-		const stopDate = moment(date).endOf('week').subtract(1, 'days').format('YYYY-MM-DD');
-		// callback({recordedAtStart: startDate, recordedAtStop: stopDate});
-		// return;
+		// console.log(['current day label', date, moment(date).format('dd')]);
+    // return;
 
+    const today = moment(date).format('dd');
+		let startDate = (today == 'Sa') ? moment(date) : moment(date).startOf('week').subtract(1, 'days');
+		const stopDate = moment(startDate).add(7, 'days').format('YYYY-MM-DD');
+    startDate = startDate.format('YYYY-MM-DD')
+    // console.log(['dates', today, startDate, stopDate])
+    // return;
+    
     var user = jwt.decode(token);
 		const params = {params: {recordedAtStart: startDate, recordedAtStop: stopDate}};
 		instance.get('/user/' + user.id + '/week/' + topic + '/total', params)
 			.then(function (response) {
-				console.log([response.data, topic]);
+				// console.log([response.data, topic]);
 
 				let data = response.data;
 				switch (data.topic) {

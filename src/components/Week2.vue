@@ -8,11 +8,15 @@
       <hr>
 
     <div id="personal-data" v-show="token">
-      <ul id="days-of-the-week">
+      <ul id="week-of-the-challenge" class="selection-buttons">
+        <li v-for="week in weekOfChallenge"><a :class="{'button': true, 'is-primary': isWeekSelected(week.value)}" @click="selectWeek(week.value)">{{ week.text }}</a></li>
+      </ul>
+
+      <ul id="days-of-the-week" class="selection-buttons">
         <li v-for="day in daysOfWeek"><a :class="{'button': true, 'is-primary': isSelected(day)}" @click="selectDetails(day)">{{ day }}</a></li>
       </ul>
       <ul id="week-view">
-        <li><a :class="{'button': true, 'is-primary': isWeekViewSelected()}" @click="selectWeek()">Week</a></li>
+        <li><a :class="{'button': true, 'is-primary': isWeekViewActive()}" @click="activateWeekView()">Week</a></li>
       </ul>
       
       <hr>
@@ -94,15 +98,31 @@ export default {
 		topics () { return window.ReadOnly.topics(); }, 
 		datesOfWeek () { 
 			let dates = {};
-			let start = moment().startOf('week').subtract(1, 'days');
-			let cnt = 0;
+
+      let mdate = moment(this.targetDay);
+      const today = mdate.format('dd');
+      let start = (today == 'Sa') ? mdate : mdate.startOf('week').subtract(1, 'days').format('YYYY-MM-DD');
+        
 			for (let cnt=0; cnt < 7; cnt += 1) {
 				let dateLabel = this.daysOfWeek[cnt];
 				let dateValue = start.format("YYYY-MM-DD");
+        // console.log(['dateValue', dateValue]);
 				dates[dateLabel] = dateValue;
 				start = start.add(1, 'days');
 			}
 			return dates;
+		}, 
+		weekOfChallenge () { 
+			let weeks = [];
+      let start = moment('2018-01-06');
+        
+			for (let cnt=0; cnt < 8; cnt += 1) {
+				let dateLabel = start.format("YYYY-MM-DD");
+				let dateText = start.format("MM/DD");
+				weeks.push ({value: dateLabel, text: dateText});
+				start = start.add(1, 'weeks');
+			}
+			return weeks;
 		}, 
 	},
 	methods: {
@@ -119,26 +139,34 @@ export default {
 			window.Event.$emit("app:signOut");
     },
 		selectDetails (day) {
-			this.selectedWeek = false;
+			this.weekViewActive = false;
 			this.selectedDay = day
-			console.log("selecting " + day);
-			window.Event.$emit("week-view:enable", this.selectedWeek);
+			console.log("selecting day: " + day);
+			window.Event.$emit("week-view:enable", this.weekViewActive);
 			window.Event.$emit("details:select", this.selectedDay);
-			return false;
 		},
 		isSelected (day) {
 			return (this.selectedDay == day);
 		},
-		selectWeek () {
-			this.selectedWeek = true;
+		selectWeek (week) {
+      this.targetDay = moment(week);
+			this.selectedWeek = week;
+			console.log("selecting week: " + week);
+      window.Event.$emit("week2:fetchedJwt", this.token, this.targetDay);
+      this.activateWeekView();
+		},
+		isWeekSelected (week) {
+			return (this.selectedWeek == week);
+		},
+		activateWeekView () {
+			this.weekViewActive = true;
 			this.selectedDay = 'none';
 			console.log("selecting week");
-			window.Event.$emit("week-view:enable", this.selectedWeek);
+			window.Event.$emit("week-view:enable", this.weekViewActive);
 			window.Event.$emit("details:select", this.selectedDay);
-			return false;
 		},
-		isWeekViewSelected () {
-			return this.selectedWeek;
+		isWeekViewActive () {
+			return this.weekViewActive;
 		},
 		allCheckboxesCheckedFor (topic) {
 			let isChecked = true;
@@ -171,7 +199,7 @@ export default {
 			return setChecked;
 		},
 		updateTotalPoints () {
-			api.fetchTotal(this.token, this.datesOfWeek[0], 'all', (res) => {
+			api.fetchTotal(this.token, this.datesOfWeek.sa, 'all', (res) => {
 				this.total = res.total;
 			});
 		},
@@ -190,9 +218,11 @@ export default {
 	},
   data () {
     return {
+			targetDay: moment(), 
 			label: 'asdf', 
 			selectedDay: 'sa', 
-			selectedWeek: false, 
+      selectedWeek: '',
+			weekViewActive: false, 
 			total: 0,
 			topic_points_to_update: 0,
 			topic_complete_to_fetch: {cnt: -1, tally: 0, total: 0},
@@ -225,8 +255,8 @@ export default {
 			for (let topic of ['positive-food', 'fruits-vegetables', 'negative-food', 'water', 'after-8', 'exercise', 'daily-greatness', 'scripture-study', 'personal-prayer']) {
 				// console.log(["points:update", this.datesOfWeek]);
 				this.topic_points_to_update = Object.keys(this.datesOfWeek).length;
-				api.fetchTotal(this.token, this.datesOfWeek[0], topic, (res) => {
-					// console.log({topic: topic, total: res.total});
+				api.fetchTotal(this.token, this.datesOfWeek.sa, topic, (res) => {
+					// console.log(['points:update:fetchTotal', {topic: topic, total: res.total}]);
 					window.Event.$emit("topic:points:update", {topic: topic, total: res.total});
 				});
 			}
@@ -236,8 +266,10 @@ export default {
 			this.topic_points_to_update -= 1;
 			// console.log(['topic:points:updated', this.topic_points_to_update]);
 			if (this.topic_points_to_update == 0) {
-				api.fetchTotal(this.token, this.datesOfWeek[0], 'all', (res) => {
+				api.fetchTotal(this.token, this.datesOfWeek.sa, 'all', (res) => {
+					// console.log(['topic:points:updated:fetchTotal', res, this.total, this.weight_points]);
 					this.total = res.total + this.weight_points;
+					// console.log(['topic:points:updated:fetchTotal:2', res, this.total, this.weight_points]);
 				});
 			}
 		});
@@ -275,21 +307,36 @@ export default {
       this.total = 0;
 		});
 
-    // window.Event.$emit("app:fetchJwt");
-    window.Event.$on("week2:fetchedJwt", (token) => {
+    window.Event.$on("week2:fetchedJwt", (token, targetDay) => {
       // console.log(["week2:fetchedJwt", token]);
       this.token = token;
 
       if (this.token) {
+
+        const today = moment(targetDay).format('dd');
+        this.selectedWeek = (today == 'Sa') ? moment(targetDay).format('YYYY-MM-DD') : moment(targetDay).startOf('week').subtract(1, 'days').format('YYYY-MM-DD');
+
+        for (let day of this.daysOfWeek) {
+          let date = this.datesOfWeek[day];
+          for (let topic of this.topics) {
+            // m:2018-02-05:daily-greatness
+            let data = day + ":" + date + ":" + topic;
+            console.log(data);
+            window.Event.$emit("dayMeta:set", day, topic, data);
+          }
+        }
+        
         api.fetchUser(this.token, (res) => {
           this.user = res.user;
           this.weight_factor = this.user.weight_factor;
           this.weight_least = this.user.weight_least;
         });
       
-        api.fetchWeek(this.token, this.datesOfWeek[0], (res) => {
+        // console.log(['this.datesOfWeek', this.datesOfWeek]);
+        api.fetchWeek(this.token, this.datesOfWeek.sa, (res) => {
           // console.log(res.week);
           for (let day of res.week) {
+            console.log(["data:update", day]);
             window.Event.$emit("data:update", day)
           }
           window.Event.$emit("points:update");
@@ -299,21 +346,22 @@ export default {
         // TODO: clear fields
       }
 
-      console.log(['this.selectedDay', this.selectedDay]);
+      // console.log(['this.selectedDay', this.selectedDay]);
       this.selectDetails(this.selectedDay);
     });
-    
+
     this.selectDetails(this.selectedDay);
+    // this.targetDay = moment().subtract(7, 'days');
 	}
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-	#days-of-the-week {
+	.selection-buttons {
 		margin: 2em 0;
 	}
-	#days-of-the-week li {
+	.selection-buttons li {
 		display: inline-block;
 		margin: 0 2px;
 	}
